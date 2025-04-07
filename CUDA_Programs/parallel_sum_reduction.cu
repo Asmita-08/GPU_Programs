@@ -1,8 +1,10 @@
-#include <cuda_runtime.h>
+#include<cuda_runtime.h>
 #include <stdio.h>
+#include <stdlib.h>
 
+// Kernel function for parallel sum
 __global__ void parallel_sum(int *input, int *output, int n) {
-    __shared__ int temp[256];  
+    __shared__ int temp[256];
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
     temp[threadIdx.x] = (idx < n) ? input[idx] : 0;
@@ -18,10 +20,11 @@ __global__ void parallel_sum(int *input, int *output, int n) {
     if (threadIdx.x == 0) output[blockIdx.x] = temp[0];
 }
 
+// Main function
 int main() {
-    int n = 256;  
+    int n = 256;  // Array size
     int blockSize = 256;
-    int gridSize = (n + blockSize - 1) / blockSize; 
+    int gridSize = (n + blockSize - 1) / blockSize;
 
     int *h_input, *h_output;
     int *d_input, *d_output;
@@ -30,7 +33,7 @@ int main() {
     h_output = (int*)malloc(gridSize * sizeof(int));
 
     for (int i = 0; i < n; i++) {
-        h_input[i] = 1;  
+        h_input[i] = 1;  // Initialize array with 1s
     }
 
     cudaMalloc(&d_input, n * sizeof(int));
@@ -56,3 +59,5 @@ int main() {
 
     return 0;
 }
+
+
